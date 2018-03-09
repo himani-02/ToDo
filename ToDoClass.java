@@ -11,6 +11,12 @@ public class ToDoClass {
     private String content;
     private int id;
 
+    public ToDoClass(String taskName, String content) {
+        this.taskName = taskName;
+        this.content = content;
+        this.id=-1;
+    }
+
     public ToDoClass(String taskName, String content, int id) {
         this.taskName = taskName;
         this.content = content;

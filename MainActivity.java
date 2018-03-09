@@ -17,7 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-
+ // where data is displayed and actions are performed
 public class MainActivity extends AppCompatActivity {
     ListView listView;
     ArrayList<ToDoClass>ToDoList;
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                 bundle.putString(ConstantKeys.CONTENT_KEY,content);
                 bundle.putInt(ConstantKeys.POSITION_KEY,i);
                 intent.putExtras(bundle);
-                startActivityForResult(intent,ConstantKeys.EDIT_REQUEST);
+                startActivityForResult(intent,ConstantKeys.EDIT_ACTIVITY);
             }
         });
 
@@ -78,29 +78,34 @@ public class MainActivity extends AppCompatActivity {
         if(data!=null){
             Bundle bundle=data.getExtras();
             switch(requestCode){
-                case(ConstantKeys.EDIT_REQUEST):
+                case ConstantKeys.EDIT_ACTIVITY:
                     if(resultCode==ConstantKeys.RESULT){
-                        int position=bundle.getInt(ConstantKeys.POSITION_KEY,-1);
-                        if(position>=0){
-                            ToDoClass element=getDataFromBundle(bundle);
-                            ToDoList.add(position,element);
+                        if(bundle!=null) {
+                            int position = bundle.getInt(ConstantKeys.POSITION_KEY, -1);
+                            if (position >= 0) {
+                                ToDoClass element = getDataFromBundle(bundle);
+                                ToDoList.add(position, element);
+                                TodoAdapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+                    break;
+                case ConstantKeys.ADD_REQUEST:
+                    if(resultCode==ConstantKeys.RESULT){
+                        if(bundle!=null) {
+                            ToDoClass element = getDataFromBundle(bundle);
+                            SQLiteDatabase database = openHelper.getWritableDatabase();
+                            ContentValues contentValue = new ContentValues();
+                            contentValue.put(Contract.ToDo.TASK_NAME, element.getTaskName());
+                            contentValue.put(Contract.ToDo.CONTENT, element.getContent());
+                            //setting id
+                            long id = database.insert(Contract.ToDo.TABLE_NAME, null, contentValue);
+                            element.setId((int) id);
+                            ToDoList.add(element);
                             TodoAdapter.notifyDataSetChanged();
                         }
                     }
-
-                case(ConstantKeys.ADD_REQUEST):
-                    if(resultCode==ConstantKeys.RESULT){
-                        ToDoClass element=getDataFromBundle(bundle);
-                        SQLiteDatabase database=openHelper.getWritableDatabase();
-                        ContentValues contentValue=new ContentValues();
-                        contentValue.put(Contract.ToDo.TASK_NAME,element.getTaskName());
-                        contentValue.put(Contract.ToDo.CONTENT,element.getContent());
-                        //setting id
-                        long id=database.insert(Contract.ToDo.TABLE_NAME,null,contentValue);
-                        element.setId((int)id);
-                        ToDoList.add(element);
-                        TodoAdapter.notifyDataSetChanged();
-                    }
+                    break;
             }
         }
     }
@@ -109,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         if(bundle!=null) {
             String taskname = bundle.getString(ConstantKeys.TASKNAME_KEY, "");
             String content = bundle.getString(ConstantKeys.CONTENT_KEY, "");
-            return new ToDoClass(taskname,content,-1);
+            return new ToDoClass(taskname,content);
         }
         return null;
     }

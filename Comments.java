@@ -18,6 +18,7 @@ public class Comments {
     public Comments(String comment, int todo_id) {
         this.comment = comment;
         this.todo_id = todo_id;
+        this.id=-1;
     }
 
     public int getId() {

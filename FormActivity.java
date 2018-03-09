@@ -9,7 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
+ //to enter task name and comment
 public class FormActivity extends AppCompatActivity {
     EditText taskname;
     EditText content;
@@ -26,6 +26,7 @@ public class FormActivity extends AppCompatActivity {
         if(bundle!=null){
             String taskName=bundle.getString(ConstantKeys.TASKNAME_KEY);
             String conTent=bundle.getString(ConstantKeys.CONTENT_KEY);
+            //int pos =bundle.getInt(ConstantKeys.POSITION_KEY);
             taskname.setText(taskName);
             content.setText(conTent);
         }
@@ -46,10 +47,12 @@ public class FormActivity extends AppCompatActivity {
             Toast.makeText(this,"Content cannot be empty",Toast.LENGTH_SHORT).show();
             return;
         }
+
         bundle.putString(ConstantKeys.TASKNAME_KEY,TaskName);
         bundle.putString(ConstantKeys.CONTENT_KEY,Content);
         Intent intent=new Intent();
         intent.putExtras(bundle);
+
         setResult(ConstantKeys.RESULT,intent);
         finish();
     }
